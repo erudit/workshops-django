@@ -245,24 +245,24 @@ On vous contacte pour créer un site web qui pourrait gérer les joueurs et les 
     * [https://docs.djangoproject.com/en/1.5/topics/http/views/](https://docs.djangoproject.com/en/1.5/topics/http/views/)
     * *[voir tutoriel Part 3 (version shortcut)](https://docs.djangoproject.com/en/1.5/intro/tutorial03/)*
 
-          from django.shortcuts import render
+              from django.shortcuts import render
 
-          def home(request):
-              c = { }
-              return render(request, 'home.html', c)
+              def home(request):
+                  c = { }
+                  return render(request, 'home.html', c)
 
 * `templates` [https://docs.djangoproject.com/en/1.5/topics/templates/](https://docs.djangoproject.com/en/1.5/topics/templates/)
     * créer répertoire `templates` dans `ligue_rugby_mp`
     * configurer le projet pour qu'il sache où aller chercher par défaut les templates<br />
     `ligue_rugby_mp/settings.py`
 
-          import os
+              import os
 
-          # ...
+              # ...
 
-          TEMPLATE_DIRS = (
-              os.path.join(os.path.dirname(__file__), "templates"),
-          )
+              TEMPLATE_DIRS = (
+                  os.path.join(os.path.dirname(__file__), "templates"),
+              )
 
 * créer le template de la page d'accueil<br />
 `ligue_rugby_mp/templates/home.html`
