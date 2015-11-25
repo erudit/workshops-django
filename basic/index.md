@@ -88,150 +88,106 @@ On vous contacte pour créer un site web qui pourrait gérer les articles de rev
 
         $ python manage.py runserver
 
-* configurer la base de données<br />
-`erudit/settings.py`
-
-        DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-                'NAME': 'erudit.db',                      # Or path to database file if using sqlite3.
-                'USER': '',                      # Not used with sqlite3.
-                'PASSWORD': '',                  # Not used with sqlite3.
-                'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-                'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-            }
-        }
-
 ### Création d'une application
 
-* créer l'application `ligue`
+* créer l'application `edition`
 
-        $ python manage.py startapp ligue
+        $ python manage.py startapp edition
 
 * survol fichiers
 * coder des modèles<br />
-`ligue/models.py`
+`edition/models.py`
     * documentation :
         * [https://docs.djangoproject.com/en/1.8/topics/db/models/](https://docs.djangoproject.com/en/1.8/topics/db/models/)
         * [https://docs.djangoproject.com/en/1.8/ref/models/fields/](https://docs.djangoproject.com/en/1.8/ref/models/fields/)
     * yeah! on code!
-        * Equipe.nom
-        * Joueur.nom
+        * Revue.nom
+        * Auteur.nom
 
               from django.db import models
 
-              class Equipe(models.Model):
+              class Revue(models.Model):
                   pass  # code fields here
 
-              class Joueur(models.Model):
+              class Auteur(models.Model):
                   pass  # code fields here
 
-* installer l'application `ligue`<br />
+* installer l'application `edition`<br />
 `erudit/settings.py`
 
         INSTALLED_APPS = (
             # ...
-            'ligue',
+            'edition',
         )
 
-### South
 
-* installer South dans le projet<br />
-`erudit/settings.py`
+### Commandes Django
 
-        INSTALLED_APPS = (
-            # ...
-            'south',
-        )
+        $ python manage.py help
 
-* créer une migration pour une nouvelle application
+### Migration
 
-        $ python manage.py schemamigration ligue --initial
+* créer une migration
 
-* *créer une migration pour un application existante (pas le cas ici)*
+        $ python manage.py makemigrations
 
-        $ python manage.py schemamigration --auto
+* appliquer des migrations
 
-* créer les tables de south
-
-        $ python manage.py syncdb
-
-* appliquer les migrations
-
-        $ python manage.py migrate ligue
+        $ python manage.py migrate
 
 ### Backend : gérer les données dans l'admin
 
-* activer les urls permettant l'accès à l'interface d'admin : *décommenter*<br />
-`erudit/urls.py`
+* l'admin est installé par défaut avec Django 1.8
+    * `settings.py`
+    * `urls.py`
 
-        # ...
+* les tables nécessaires à l'application admin sont créées lors de la première migration
 
-        from django.contrib import admin
-        admin.autodiscover()
-
-        urlpatterns = patterns('',
-            # ...
-            url(r'^admin/', include(admin.site.urls)),
-        )
-
-* [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-* installer l'application d'admin dans le projet<br />
-`erudit/settings.py`
-
-        INSTALLED_APPS = (
-            # ...
-            'django.contrib.admin',
-            # ...
-        )
-
-* créer les tables de l'admin
-
-      $ python manage.py syncdb
+      $ python manage.py migrate
 
 * [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
 
-* enregistrer les modèles dans l'admin : *[voir tutoriel Part 2](https://docs.djangoproject.com/en/1.8/intro/tutorial02/)*<br />
-`ligue/admin.py`
+* créer un utilisateur superadmin
+
+      $ python manage.py createsuperuser
+
+* enregistrer les modèles dans l'admin<br />
+`edition/admin.py`
 
         from django.contrib import admin
 
-        from ligue.models import Equipe, Joueur
+        from edition.models import Revue, Auteur
 
-        admin.site.register(Equipe)
-        admin.site.register(Joueur)
 
-* pimper les modèles pour une meilleure lisibilité dans l'admin<br />
-`ligue/models.py`
+        admin.site.register(Revue)
+        admin.site.register(Auteur)
 
-        def __unicode__(self):
-            return ""  # coder ici la chaîne unicode désirée que l'on veut retourner
+* améliorer les modèles pour une meilleure lisibilité dans l'admin<br />
+`edition/models.py`
+
+        def __str__(self):
+            return ""  # coder ici la chaîne de caractères désirée que l'on veut retourner
 
 * ajouter de façon itérative plus d'infos sur nos modèles
-    * Joueur.prenom
-    * Joueur.date_naissance
+    * Editeur
+    * Numero
+    * Article
+    * Auteur.prenom
+    * Auteur.date_naissance
 
-* Si south est installé, créer et appliquer la migration :
+* créer et appliquer la migration :
 
-        $ python manage.py schemamigration ligue --auto
+        $ python manage.py makemigrations
 
-        $ python manage.py migrate ligue
+        $ python manage.py migrate
 
-* Sinon :
-    * supprimer `erudit.db`
-    * recréer les tables
-
-          $ python manage.py syncdb
-
-* ajouter une relation entre `Joueur` et `Equipe`<br />
-    `ligue/models.py`
+* ajouter une relation entre `Article` et `Auteur`<br />
+    `edition/models.py`
     * ajouter :<br />
-    `Joueur.equipe`
-    * modifier la base de données en conséquence :
-        * south : créer et appliquer la migration
-        * autre : supprimer la DB et syncdb
+    `Article.auteurs`
+    * modifier la base de données en conséquence (migration)
 
-* ajouter quelque Equipes et Joueurs dans l'admin
+* ajouter quelque données dans l'admin
 
 ### Frontend : présenter les données
 
@@ -246,7 +202,6 @@ On vous contacte pour créer un site web qui pourrait gérer les articles de rev
 * créer le code qui va générer la page d'accueil<br />
 `erudit/views.py`
     * [https://docs.djangoproject.com/en/1.8/topics/http/views/](https://docs.djangoproject.com/en/1.8/topics/http/views/)
-    * *[voir tutoriel Part 3 (version shortcut)](https://docs.djangoproject.com/en/1.8/intro/tutorial03/)*
 
               from django.shortcuts import render
 
@@ -256,15 +211,13 @@ On vous contacte pour créer un site web qui pourrait gérer les articles de rev
 
 * `templates` [https://docs.djangoproject.com/en/1.8/topics/templates/](https://docs.djangoproject.com/en/1.8/topics/templates/)
     * créer répertoire `templates` dans `erudit`
-    * configurer le projet pour qu'il sache où aller chercher par défaut les templates<br />
+    * par défaut Django chercher les templates dans les répertoires `templates` des applications installées
+    * configurer le projet pour `erudit` soit une app installée<br />
     `erudit/settings.py`
 
-              import os
-
-              # ...
-
-              TEMPLATE_DIRS = (
-                  os.path.join(os.path.dirname(__file__), "templates"),
+              INSTALLED_APPS = (
+                  [...]
+                  'erudit',
               )
 
 * créer le template de la page d'accueil<br />
@@ -285,26 +238,38 @@ On vous contacte pour créer un site web qui pourrait gérer les articles de rev
 
 * ORM (API) : object relation mapping
 
-        from ligue.models import *
-        equipes = Equipe.objects.all()
-        for e in equipes: print e
-        e = equipes[0]
-        e.joueur_set.all()
-        j = Joueur.objects.get(id=1)
-        j.id
-        j = Joueur.objects.get(id=314)
-        e.id
-        joueurs = Joueur.objects.filter(equipe__nom__startswith='Pyth')
+        from edition.models import *
+        articles = Article.objects.all()
+        for a in articles: print(a)
+        a = articles[0]
+        a.auteurs.all()
+        au = Auteur.objects.get(id=1)
+        au.id
+        au = Joueur.objects.get(id=314)
+        auteurs = Auteur.objects.filter(article__nom__startswith='Laozi')
+
+* créer une relation entre Revue et Editeur
+
+* créer des données dans l'admin
+
+* tester l'accès à l'Editeur via une Revue, et vice versa
+
+        revue = Revue.objects.get(id=1)
+        revue.editeur
+        e_id = rvue.editeur.id
+        editeur = editeur.objects.get(id=e_id)
+        editeur.revues
+        editeur.revue_set.all()
 
 * faciliter la syntaxe d'accès aux objets reliés<br />
-`ligue/models.py`
+`edition/models.py`
 
-        related_name = "joueurs"
+        related_name = "revues"
 
 * relancer shell
 
-        e.joueurs.all()
-        e.joueurs.count()
+        editeur.revues.all()
+        editeur.revues.count()
 
 * passer les variables pertinentes pour accueil<br />
 suite à exploration interactive via l'ORM dans le shell<br />
@@ -313,12 +278,12 @@ suite à exploration interactive via l'ORM dans le shell<br />
 * boucler sur des querysets dans le template<br />
 `erudit/templates/home.html`
 
-        {% for e in equipes %}
+        {% for r in revues %}
         {% endfor %}
 
 ---
 
-## PARTIE 3 : PROJET LRMP PIMPÉ
+## PARTIE 3 : PROJET ERUDIT AMÉLIORÉ
 
 ### Héritage de templates
 
@@ -336,59 +301,59 @@ suite à exploration interactive via l'ORM dans le shell<br />
 
 ### URL avec paramètres
 
-* import des urls d'une app, ici celle de l'app `ligue`<br />
+* import des urls d'une app, ici celle de l'app `edition`<br />
 `erudit/urls.py`
 
         urlpatterns = patterns('',
             # ...
-            url(r'^', include('ligue.urls')),
+            url(r'^', include('edition.urls')),
         )
 
 * pages de détail : capter l'id de l'objet dans l'URL<br />
-`ligue/urls.py`
+`edition/urls.py`
 
         from django.conf.urls.defaults import patterns
 
-        urlpatterns = patterns('ligue.views',
-            url(r'^equipes/(?P<id>\d+)$', 'equipe_detail', name="equipe"),
+        urlpatterns = patterns('edition.views',
+            url(r'^revues/(?P<id>\d+)$', 'revue_detail', name="revue"),
         )
 
 * capter l'id de l'objet dans la vue et aller chercher l'objet en DB<br />
-`ligue/views.py`
+`edition/views.py`
 
         from django.shortcuts import render
 
-        from ligue.models import Equipe
+        from edition.models import Revue
 
-        def equipe_detail(request, id):
-            equipe = Equipe.objects.get(id=id)
+        def revue_detail(request, id):
+            revue = Revue.objects.get(id=id)
             c = {
-                'equipe': equipe,
+                'revue': revue,
             }
-            return render(request, "ligue/equipe_detail.html", c)
+            return render(request, "edition/revue_detail.html", c)
 
 * utiliser l'objet dans le template<br />
-`ligue/templates/ligue/equipe_detail.html`
+`edition/templates/edition/revue_detail.html`
 
-        {{ equipe.nom }}
+        {{ revue.nom }}
 
-### Admin pimpé : ModelAdmin
+### Admin amélioré : ModelAdmin
 
 [https://docs.djangoproject.com/en/1.8/ref/contrib/admin/](https://docs.djangoproject.com/en/1.8/ref/contrib/admin/)
 
-* classes héritant de `ModelAdmin` : `JoueurAdmin`, `EquipeAdmin`<br />
-`ligue/admin.py`
+* classes héritant de `ModelAdmin` : `AuteurAdmin`, `ArticleAdmin`<br />
+`edition/admin.py`
 
-        class EquipeAdmin(admin.ModelAdmin):
+        class ArticleAdmin(admin.ModelAdmin):
             pass
 
-        class JoueurAdmin(admin.ModelAdmin):
+        class AuteurAdmin(admin.ModelAdmin):
             pass
 
 * enregistrer Modele avec ModeleAdmin
 
-        admin.site.register(Equipe, EquipeAdmin)
-        admin.site.register(Joueur, JoueurAdmin)
+        admin.site.register(Article, ArticleAdmin)
+        admin.site.register(Auteur, AuteurAdmin)
 
 * configuration des ModeleAdmin
 
@@ -397,17 +362,19 @@ suite à exploration interactive via l'ORM dans le shell<br />
         list_filter
 
 * plus? [https://docs.djangoproject.com/en/1.8/ref/contrib/admin/](https://docs.djangoproject.com/en/1.8/ref/contrib/admin/)
-    * fields
+    * list_display_link
+    * list_editable
+    * readonly_fields
+    * inlines
     * fieldsets
-    * ...
 
 ### Saut dans le temps : télécharger les sources
 
-* Télécharger les [sources du projet pimpé](http://bit.ly/1g3mfj4)
+* Télécharger les [sources du projet amélioré][projet-pimped]
 
 * Extraire
 
-* Pimpé? Quoi de neuf?
+* Amélioré? Quoi de neuf?
 
 ### Fichiers statiques : CSS, images et js
 
@@ -444,7 +411,7 @@ suite à exploration interactive via l'ORM dans le shell<br />
 
         {{ STATIC_URL }}
 
-### Templates pimpés
+### Templates améliorés
 
 * `erudit/templates/base.html`
 
@@ -476,27 +443,24 @@ suite à exploration interactive via l'ORM dans le shell<br />
 
 ---
 
-## PARTIE 4 : HANDS-ON : CRÉER L'APPLICATION CALENDRIER POUR LE PROJET LRMP
+## PARTIE 4 : HANDS-ON : CRÉER L'APPLICATION ABONNEMENT POUR LE PROJET ERUDIT
 
-### Créer une application calendrier
+### Créer une application abonnement
 
-### Ajouter les modèles Match et Saison
+### Ajouter les modèles Bibliotheque et Abonnement
 
-* Match
-    * date
-    * lieu
-    * equipe1
-    * equipe2
-    * score1
-    * score2
-* Saison
-    * ...
+* Biblioheque
+    * nom
+* Abonnement
+    * bibliotheque
+    * revue
+    * annee
 
-### Autre exercice : âge d'un joueur
+### Autre exercice : âge d'un auteur
 
-* Joueur.date_naissance
-* Joueur.age()<br />
-*ajouter une methode `age()` sur la classe Joueur utilisant la date de naissance*
+* Auteur.date_naissance
+* Auteur.age()<br />
+*ajouter une methode `age()` sur la classe Auteur utilisant la date de naissance*
 
 ---
 
@@ -519,8 +483,6 @@ irc://irc.freenode.net/django
 
 * Contribs, plugins<br />
 [https://docs.djangoproject.com/en/dev/ref/contrib/](https://docs.djangoproject.com/en/dev/ref/contrib/)
-   * south
-   * reversion
    * Autre : pypi<br />
 [http://pypi.python.org/](http://pypi.python.org/)
 
@@ -538,3 +500,4 @@ irc://irc.freenode.net/django
 [schema-web-development]: ./web-development.jpg
 [setup]: ../setup.md
 [mtlpy]: http://montrealpython.org/
+[projet-pimped]: http://bit.ly/1g3mfj4
