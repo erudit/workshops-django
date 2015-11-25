@@ -8,7 +8,7 @@
 
 > See the associated repository for source code of the project
 
-*
+* [Django Workshops - source code][source]
 
 ## Languages
 
@@ -26,7 +26,7 @@
 
 > Latest Django version by default, for older versions see their dedicated branch
 
-* **1.8.4** with Python 3.5
+* **1.8** with Python 3.5
 * 1.5 with Python 2.6
 
 ---

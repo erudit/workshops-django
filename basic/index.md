@@ -50,16 +50,19 @@ Principaux fichiers
 
 ### Projet : définition du besoin
 
-> Montréal-Python a une ligue de rugby *(ce n'est pas vrai : DoesNotExist)*.<br />
-On vous contacte pour créer un site web qui pourrait gérer les joueurs et les équipes...<br />
-... et planifier les matchs de la saison.
+> Érudit fait la refonte de sa plateforme web.<br />
+On vous contacte pour créer un site web qui pourrait gérer les articles de revues produits par les éditeurs...<br />
+... et gérer les abonnements des bibliothèques.
 
 ### Projet : modélisation
 
-* Joueur
-* Equipe
-* Saison
-* Match
+* Editeur
+* Revue
+* Numero
+* Article
+* Auteur
+* Bibliotheque
+* Abonnement
 
 ---
 
@@ -72,13 +75,13 @@ On vous contacte pour créer un site web qui pourrait gérer les joueurs et les 
         ~$ mkdir atelier
         ~$ cd atelier
 
-* créer le projet `ligue_rugby_mp`
+* créer le projet `erudit`
 
-        $ django-admin.py startproject ligue_rugby_mp
+        $ django-admin.py startproject erudit
 
 * se déplacer dans le projet django créé
 
-        $ cd ligue_rugby_mp
+        $ cd erudit
 
 * survol des fichiers générés
 * lancer le serveur de développement
@@ -86,12 +89,12 @@ On vous contacte pour créer un site web qui pourrait gérer les joueurs et les 
         $ python manage.py runserver
 
 * configurer la base de données<br />
-`ligue_rugby_mp/settings.py`
+`erudit/settings.py`
 
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-                'NAME': 'ligue_rugby_mp.db',                      # Or path to database file if using sqlite3.
+                'NAME': 'erudit.db',                      # Or path to database file if using sqlite3.
                 'USER': '',                      # Not used with sqlite3.
                 'PASSWORD': '',                  # Not used with sqlite3.
                 'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -109,8 +112,8 @@ On vous contacte pour créer un site web qui pourrait gérer les joueurs et les 
 * coder des modèles<br />
 `ligue/models.py`
     * documentation :
-        * [https://docs.djangoproject.com/en/1.5/topics/db/models/](https://docs.djangoproject.com/en/1.5/topics/db/models/)
-        * [https://docs.djangoproject.com/en/1.5/ref/models/fields/](https://docs.djangoproject.com/en/1.5/ref/models/fields/)
+        * [https://docs.djangoproject.com/en/1.8/topics/db/models/](https://docs.djangoproject.com/en/1.8/topics/db/models/)
+        * [https://docs.djangoproject.com/en/1.8/ref/models/fields/](https://docs.djangoproject.com/en/1.8/ref/models/fields/)
     * yeah! on code!
         * Equipe.nom
         * Joueur.nom
@@ -124,7 +127,7 @@ On vous contacte pour créer un site web qui pourrait gérer les joueurs et les 
                   pass  # code fields here
 
 * installer l'application `ligue`<br />
-`ligue_rugby_mp/settings.py`
+`erudit/settings.py`
 
         INSTALLED_APPS = (
             # ...
@@ -134,7 +137,7 @@ On vous contacte pour créer un site web qui pourrait gérer les joueurs et les 
 ### South
 
 * installer South dans le projet<br />
-`ligue_rugby_mp/settings.py`
+`erudit/settings.py`
 
         INSTALLED_APPS = (
             # ...
@@ -160,7 +163,7 @@ On vous contacte pour créer un site web qui pourrait gérer les joueurs et les 
 ### Backend : gérer les données dans l'admin
 
 * activer les urls permettant l'accès à l'interface d'admin : *décommenter*<br />
-`ligue_rugby_mp/urls.py`
+`erudit/urls.py`
 
         # ...
 
@@ -174,7 +177,7 @@ On vous contacte pour créer un site web qui pourrait gérer les joueurs et les 
 
 * [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 * installer l'application d'admin dans le projet<br />
-`ligue_rugby_mp/settings.py`
+`erudit/settings.py`
 
         INSTALLED_APPS = (
             # ...
@@ -188,7 +191,7 @@ On vous contacte pour créer un site web qui pourrait gérer les joueurs et les 
 
 * [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
 
-* enregistrer les modèles dans l'admin : *[voir tutoriel Part 2](https://docs.djangoproject.com/en/1.5/intro/tutorial02/)*<br />
+* enregistrer les modèles dans l'admin : *[voir tutoriel Part 2](https://docs.djangoproject.com/en/1.8/intro/tutorial02/)*<br />
 `ligue/admin.py`
 
         from django.contrib import admin
@@ -215,7 +218,7 @@ On vous contacte pour créer un site web qui pourrait gérer les joueurs et les 
         $ python manage.py migrate ligue
 
 * Sinon :
-    * supprimer `ligue_rugby_mp.db`
+    * supprimer `erudit.db`
     * recréer les tables
 
           $ python manage.py syncdb
@@ -232,18 +235,18 @@ On vous contacte pour créer un site web qui pourrait gérer les joueurs et les 
 
 ### Frontend : présenter les données
 
-* créer une URL pour la page d'accueil : [https://docs.djangoproject.com/en/1.5/topics/http/urls/](https://docs.djangoproject.com/en/1.5/topics/http/urls/)<br />
-`ligue_rugby_mp/urls.py`
+* créer une URL pour la page d'accueil : [https://docs.djangoproject.com/en/1.8/topics/http/urls/](https://docs.djangoproject.com/en/1.8/topics/http/urls/)<br />
+`erudit/urls.py`
 
         urlpatterns = patterns('',
-            url(r'^$', 'ligue_rugby_mp.views.home', name='home'),
+            url(r'^$', 'erudit.views.home', name='home'),
             # ...
         )
 
 * créer le code qui va générer la page d'accueil<br />
-`ligue_rugby_mp/views.py`
-    * [https://docs.djangoproject.com/en/1.5/topics/http/views/](https://docs.djangoproject.com/en/1.5/topics/http/views/)
-    * *[voir tutoriel Part 3 (version shortcut)](https://docs.djangoproject.com/en/1.5/intro/tutorial03/)*
+`erudit/views.py`
+    * [https://docs.djangoproject.com/en/1.8/topics/http/views/](https://docs.djangoproject.com/en/1.8/topics/http/views/)
+    * *[voir tutoriel Part 3 (version shortcut)](https://docs.djangoproject.com/en/1.8/intro/tutorial03/)*
 
               from django.shortcuts import render
 
@@ -251,10 +254,10 @@ On vous contacte pour créer un site web qui pourrait gérer les joueurs et les 
                   c = { }
                   return render(request, 'home.html', c)
 
-* `templates` [https://docs.djangoproject.com/en/1.5/topics/templates/](https://docs.djangoproject.com/en/1.5/topics/templates/)
-    * créer répertoire `templates` dans `ligue_rugby_mp`
+* `templates` [https://docs.djangoproject.com/en/1.8/topics/templates/](https://docs.djangoproject.com/en/1.8/topics/templates/)
+    * créer répertoire `templates` dans `erudit`
     * configurer le projet pour qu'il sache où aller chercher par défaut les templates<br />
-    `ligue_rugby_mp/settings.py`
+    `erudit/settings.py`
 
               import os
 
@@ -265,13 +268,13 @@ On vous contacte pour créer un site web qui pourrait gérer les joueurs et les 
               )
 
 * créer le template de la page d'accueil<br />
-`ligue_rugby_mp/templates/home.html`
+`erudit/templates/home.html`
 
 * passer une variable au template<br />
-`ligue_rugby_mp/views.py`
+`erudit/views.py`
 
 * utiliser une variable dans les templates<br />
-`ligue_rugby_mp/templates/home.html`
+`erudit/templates/home.html`
 
         {{ var }}
 
@@ -305,10 +308,10 @@ On vous contacte pour créer un site web qui pourrait gérer les joueurs et les 
 
 * passer les variables pertinentes pour accueil<br />
 suite à exploration interactive via l'ORM dans le shell<br />
-`ligue_rugby_mp/views.py`
+`erudit/views.py`
 
 * boucler sur des querysets dans le template<br />
-`ligue_rugby_mp/templates/home.html`
+`erudit/templates/home.html`
 
         {% for e in equipes %}
         {% endfor %}
@@ -319,7 +322,7 @@ suite à exploration interactive via l'ORM dans le shell<br />
 
 ### Héritage de templates
 
-* `ligue_rugby_mp/templates/base.html`
+* `erudit/templates/base.html`
 
         {% block main %}
         {% endblock %}
@@ -334,7 +337,7 @@ suite à exploration interactive via l'ORM dans le shell<br />
 ### URL avec paramètres
 
 * import des urls d'une app, ici celle de l'app `ligue`<br />
-`ligue_rugby_mp/urls.py`
+`erudit/urls.py`
 
         urlpatterns = patterns('',
             # ...
@@ -371,7 +374,7 @@ suite à exploration interactive via l'ORM dans le shell<br />
 
 ### Admin pimpé : ModelAdmin
 
-[https://docs.djangoproject.com/en/1.5/ref/contrib/admin/](https://docs.djangoproject.com/en/1.5/ref/contrib/admin/)
+[https://docs.djangoproject.com/en/1.8/ref/contrib/admin/](https://docs.djangoproject.com/en/1.8/ref/contrib/admin/)
 
 * classes héritant de `ModelAdmin` : `JoueurAdmin`, `EquipeAdmin`<br />
 `ligue/admin.py`
@@ -393,7 +396,7 @@ suite à exploration interactive via l'ORM dans le shell<br />
         search_fields
         list_filter
 
-* plus? [https://docs.djangoproject.com/en/1.5/ref/contrib/admin/](https://docs.djangoproject.com/en/1.5/ref/contrib/admin/)
+* plus? [https://docs.djangoproject.com/en/1.8/ref/contrib/admin/](https://docs.djangoproject.com/en/1.8/ref/contrib/admin/)
     * fields
     * fieldsets
     * ...
@@ -408,14 +411,14 @@ suite à exploration interactive via l'ORM dans le shell<br />
 
 ### Fichiers statiques : CSS, images et js
 
-[https://docs.djangoproject.com/en/1.5/howto/static-files/](https://docs.djangoproject.com/en/1.5/howto/static-files/)
+[https://docs.djangoproject.com/en/1.8/howto/static-files/](https://docs.djangoproject.com/en/1.8/howto/static-files/)
 
-* répertoire : `ligue_rugby_mp/static`
+* répertoire : `erudit/static`
     * `css`
     * `images`
     * `js`
 
-* `ligue_rugby_mp/settings.py`
+* `erudit/settings.py`
 
         PROJECT_ROOT = os.path.dirname(__file__)
         SITE_ROOT = os.path.dirname(PROJECT_ROOT)
@@ -429,7 +432,7 @@ suite à exploration interactive via l'ORM dans le shell<br />
             os.path.join(PROJECT_ROOT, 'static'),
         )
 
-* `ligue_rugby_mp/urls.py`
+* `erudit/urls.py`
 
         from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
@@ -443,15 +446,15 @@ suite à exploration interactive via l'ORM dans le shell<br />
 
 ### Templates pimpés
 
-* `ligue_rugby_mp/templates/base.html`
+* `erudit/templates/base.html`
 
 ### Connexion du user
 
-* `ligue_rugby_mp/templates`
+* `erudit/templates`
     * `connexion.html`
     * `deconnexion.html`
 
-* `ligue_rugby_mp/urls.py`
+* `erudit/urls.py`
 
         urlpatterns = patterns('',
             # ...
@@ -466,7 +469,7 @@ suite à exploration interactive via l'ORM dans le shell<br />
             # ...
         )
 
-* `ligue_rugby_mp/settings.py`
+* `erudit/settings.py`
 
         LOGIN_URL = "/login/"
         LOGIN_REDIRECT_URL = "/"
@@ -501,8 +504,8 @@ suite à exploration interactive via l'ORM dans le shell<br />
 
 * Autres aspects non couverts (quelques uns)
     * permissions et décorateurs
-    * manage.py inspectdb *[legacy database](https://docs.djangoproject.com/en/1.5/howto/legacy-databases/)*
-    * fixtures : [données initiales et de test](https://docs.djangoproject.com/en/1.5/howto/initial-data/)
+    * manage.py inspectdb *[legacy database](https://docs.djangoproject.com/en/1.8/howto/legacy-databases/)*
+    * fixtures : [données initiales et de test](https://docs.djangoproject.com/en/1.8/howto/initial-data/)
     * manage.py test
     * forms
     * generic views
@@ -529,8 +532,8 @@ irc://irc.freenode.net/django
 
 ---
 
-[django-doc]: https://docs.djangoproject.com/en/1.5/
-[django-doc-fr]: https://docs.djangoproject.com/fr/1.5/
+[django-doc]: https://docs.djangoproject.com/en/1.8/
+[django-doc-fr]: https://docs.djangoproject.com/fr/1.8/
 [django-packages]: https://www.djangopackages.com/
 [schema-web-development]: ./web-development.jpg
 [setup]: ../setup.md
